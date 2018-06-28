@@ -23,7 +23,10 @@ ClassImp(AliAnalysisTaskCosmicTOF)
 
 AliAnalysisTaskCosmicTOF::AliAnalysisTaskCosmicTOF(const Char_t *name) :
   AliAnalysisTaskSE(name),
-  fOutputTree(NULL)
+  fOutputTree(NULL),
+  fNtrk(0),
+  fTstamp(0),
+  fTmask(0)
 {
   
   /*
@@ -56,30 +59,34 @@ AliAnalysisTaskCosmicTOF::UserCreateOutputObjects()
   
   fOutputTree = new TTree("CosmicTOF", "R+CosmicTOF tree with cosmic rays");
   //
-  fOutputTree->Branch("xv", &fXv, "xv[2]/F");
-  fOutputTree->Branch("yv", &fYv, "yv[2]/F");
-  fOutputTree->Branch("zv", &fZv, "zv[2]/F");
+  fOutputTree->Branch("ntrk", &fNtrk, "ntrk/I");
+  fOutputTree->Branch("tstamp", &fTstamp, "tstamp/i");
+  fOutputTree->Branch("tmask", &fTmask, "tmask/i");
   //
-  fOutputTree->Branch("p", &fP, "p[2]/F");
-  fOutputTree->Branch("pt", &fPt, "pt[2]/F");
-  fOutputTree->Branch("eta", &fEta, "eta[2]/F");
-  fOutputTree->Branch("phi", &fPhi, "phi[2]/F");
+  fOutputTree->Branch("xv", &fXv, "xv[ntrk]/F");
+  fOutputTree->Branch("yv", &fYv, "yv[ntrk]/F");
+  fOutputTree->Branch("zv", &fZv, "zv[ntrk]/F");
   //
-  fOutputTree->Branch("ncls", &fNcls, "ncls[2]/F");
-  fOutputTree->Branch("chi2", &fChi2, "chi2[2]/F");
-  fOutputTree->Branch("dedx", &fdEdx, "dedx[2]/F");
+  fOutputTree->Branch("p", &fP, "p[ntrk]/F");
+  fOutputTree->Branch("pt", &fPt, "pt[ntrk]/F");
+  fOutputTree->Branch("theta", &fTheta, "theta[ntrk]/F");
+  fOutputTree->Branch("phi", &fPhi, "phi[ntrk]/F");
   //
-  fOutputTree->Branch("texp", &fTexp, "texp[2]/F");
-  fOutputTree->Branch("length", &fLength, "tength[2]/F");
+  fOutputTree->Branch("ncls", &fNcls, "ncls[ntrk]/I");
+  fOutputTree->Branch("chi2", &fChi2, "chi2[ntrk]/F");
+  fOutputTree->Branch("dedx", &fdEdx, "dedx[ntrk]/F");
   //
-  fOutputTree->Branch("index", &fIndex, "index[2]/F");
-  fOutputTree->Branch("time", &fTime, "time[2]/F");
-  fOutputTree->Branch("raw", &fRaw, "raw[2]/F");
-  fOutputTree->Branch("tot", &fTOT, "tot[2]/F");
+  fOutputTree->Branch("texp", &fTexp, "texp[ntrk]/F");
+  fOutputTree->Branch("length", &fLength, "tength[ntrk]/F");
   //
-  fOutputTree->Branch("dx", &fDx, "dx[2]/F");
-  fOutputTree->Branch("dz", &fDz, "dz[2]/F");
-  fOutputTree->Branch("nmatch", &fNmatch, "nmatch[2]/F");
+  fOutputTree->Branch("index", &fIndex, "index[ntrk]/I");
+  fOutputTree->Branch("time", &fTime, "time[ntrk]/F");
+  fOutputTree->Branch("raw", &fRaw, "raw[ntrk]/F");
+  fOutputTree->Branch("tot", &fTOT, "tot[ntrk]/F");
+  //
+  fOutputTree->Branch("dx", &fDx, "dx[ntrk]/F");
+  fOutputTree->Branch("dz", &fDz, "dz[ntrk]/F");
+  fOutputTree->Branch("nmatch", &fNmatch, "nmatch[ntrk]/I");
 
   PostData(1, fOutputTree);
 }
@@ -98,21 +105,24 @@ AliAnalysisTaskCosmicTOF::UserExec(Option_t *)
   AliESDEvent *esd = dynamic_cast<AliESDEvent *>(InputEvent());
   if (!esd) return;
 
+  fTstamp = esd->GetTimeStamp();
+  fTmask = esd->GetTriggerMask();
+
   /** loop over ESD tracks **/
   Int_t ntracks = esd->GetNumberOfTracks();
-  Int_t ntpctracks = 0;
+  fNtrk = 0;
   AliESDtrack *tpctracks[1024];
   for (Int_t itrack = 0; itrack < ntracks; itrack++) {
     AliESDtrack *track = esd->GetTrack(itrack);
     if (!(track->GetStatus() & AliESDtrack::kTPCrefit)) continue;
-    tpctracks[ntpctracks++] = track;
-    if (ntpctracks > 2) break;
+    tpctracks[fNtrk++] = track;
+    if (fNtrk == 1024) break;
   }
-  if (ntpctracks != 2) return;
+  if (fNtrk < 2) return;
 
   /** save info of selected event **/
   Double_t times[10];
-  for (Int_t itrack = 0; itrack < ntpctracks; itrack++) {
+  for (Int_t itrack = 0; itrack < fNtrk; itrack++) {
     //
     fXv[itrack] = tpctracks[itrack]->Xv();
     fYv[itrack] = tpctracks[itrack]->Yv();
@@ -120,7 +130,7 @@ AliAnalysisTaskCosmicTOF::UserExec(Option_t *)
     //
     fP[itrack] = tpctracks[itrack]->P();
     fPt[itrack] = tpctracks[itrack]->Pt();
-    fEta[itrack] = tpctracks[itrack]->Eta();
+    fTheta[itrack] = tpctracks[itrack]->Theta();
     fPhi[itrack] = tpctracks[itrack]->Phi();
     //
     fNcls[itrack] = tpctracks[itrack]->GetTPCncls();

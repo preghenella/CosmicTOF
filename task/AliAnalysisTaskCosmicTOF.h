@@ -31,14 +31,20 @@ class AliAnalysisTaskCosmicTOF : public AliAnalysisTaskSE
   AliAnalysisTaskCosmicTOF &operator=(const AliAnalysisTaskCosmicTOF &); // not implemented
 
   TTree *fOutputTree;
+  Int_t fNtrk;
+  UInt_t fTstamp;
+  ULong64_t fTmask;
   //
-  Float_t fXv[2], fYv[2], fZv[2];
-  Float_t fP[2], fPt[2], fEta[2], fPhi[2];
-  Float_t fNcls[2], fChi2[2], fdEdx[2];
-  Float_t fTexp[2], fLength[2];
+  Float_t fXv[1024], fYv[1024], fZv[1024];
+  Float_t fP[1024], fPt[1024], fTheta[1024], fPhi[1024];
+  Int_t fNcls[1024];
+  Float_t fChi2[1024], fdEdx[1024];
+  Float_t fTexp[1024], fLength[1024];
   //
-  Float_t fIndex[2], fTime[2], fRaw[2], fTOT[2];
-  Float_t fDx[2], fDz[2], fNmatch[2];
+  Int_t fIndex[1024];
+  Float_t fTime[1024], fRaw[1024], fTOT[1024];
+  Float_t fDx[1024], fDz[1024];
+  Int_t fNmatch[1024];
 
   ClassDef(AliAnalysisTaskCosmicTOF, 1);
 };
