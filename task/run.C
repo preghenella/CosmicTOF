@@ -108,6 +108,12 @@ ConfigDataset(AliAnalysisAlien *plugin,
     plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
   }
   //
+  if (dataset.EqualTo("LHC17k")) {
+    plugin->SetRunPrefix("000");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17k");
+    plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
+  }
+  //
   if (dataset.EqualTo("LHC15o")) {
     plugin->SetRunPrefix("000");
     plugin->SetGridDataDir("/alice/data/2015/LHC15o");
@@ -123,6 +129,10 @@ ConfigDataset(AliAnalysisAlien *plugin,
     275878
   };
   //
+  Int_t runlist_LHC17k[] = {
+    275878, 275023, 275532, 275882
+  };
+  //
   Int_t runlist_LHC15o[] = {
     246469
   };
@@ -130,6 +140,11 @@ ConfigDataset(AliAnalysisAlien *plugin,
   if (runlist.EqualTo("test")) {
     _runlist = runlist_test;
     _nruns = sizeof(runlist_test)/4;
+  }
+  //
+  if (runlist.EqualTo("LHC17k")) {
+    _runlist = runlist_LHC17k;
+    _nruns = sizeof(runlist_LHC17k)/4;
   }
   //
   if (runlist.EqualTo("LHC15o")) {
