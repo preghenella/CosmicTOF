@@ -38,8 +38,11 @@ void run(TString pluginMode = "test",
   /* ADD TASK                             */
   /****************************************/
   
+  gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
   gROOT->LoadMacro("AliAnalysisTaskCosmicTOF.cxx++g");
   gROOT->LoadMacro("AddAnalysisTaskCosmicTOF.C");
+  
+  AddTaskPIDResponse();
   AddAnalysisTaskCosmicTOF();
   
   /****************************************/
@@ -95,7 +98,7 @@ AliAnalysisGrid* CreateAlienHandler(TString pluginmode,
     return plugin;
 }
 
-ConfigDataset(AliAnalysisAlien *plugin,
+void ConfigDataset(AliAnalysisAlien *plugin,
 	      TString dataset,
 	      TString runlist)
 {
@@ -108,9 +111,33 @@ ConfigDataset(AliAnalysisAlien *plugin,
     plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
   }
   //
+  if (dataset.EqualTo("LHC17i")) {
+    plugin->SetRunPrefix("000");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17i");
+    plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
+  }
+  //
   if (dataset.EqualTo("LHC17k")) {
     plugin->SetRunPrefix("000");
     plugin->SetGridDataDir("/alice/data/2017/LHC17k");
+    plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
+  }
+  //
+  if (dataset.EqualTo("LHC17l")) {
+    plugin->SetRunPrefix("000");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17l");
+    plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
+  }
+  //
+  if (dataset.EqualTo("LHC17m")) {
+    plugin->SetRunPrefix("000");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17m");
+    plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
+  }
+  //
+  if (dataset.EqualTo("LHC17o")) {
+    plugin->SetRunPrefix("000");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17o");
     plugin->SetDataPattern("cosmics_pass1/*/AliESDs.root");
   }
   //
@@ -129,8 +156,24 @@ ConfigDataset(AliAnalysisAlien *plugin,
     275878
   };
   //
+  Int_t runlist_LHC17i[] = {
+    273789, 273999, 274041, 274295, 274408, 274429 
+  };
+  //
   Int_t runlist_LHC17k[] = {
     275878, 275023, 275532, 275882
+  };
+  //
+  Int_t runlist_LHC17l[] = {
+    276817, 276825, 276871, 276950, 278457, 278613, 278664
+  };
+  //
+  Int_t runlist_LHC17m[] = {
+    279803, 279804
+  };
+  //
+  Int_t runlist_LHC17o[] = {
+    281375 
   };
   //
   Int_t runlist_LHC15o[] = {
@@ -140,6 +183,26 @@ ConfigDataset(AliAnalysisAlien *plugin,
   if (runlist.EqualTo("test")) {
     _runlist = runlist_test;
     _nruns = sizeof(runlist_test)/4;
+  }
+  //
+  if (runlist.EqualTo("LHC17i")) {
+    _runlist = runlist_LHC17i;
+    _nruns = sizeof(runlist_LHC17i)/4;
+  }
+  //
+  if (runlist.EqualTo("LHC17l")) {
+    _runlist = runlist_LHC17l;
+    _nruns = sizeof(runlist_LHC17l)/4;
+  }
+  //
+  if (runlist.EqualTo("LHC17m")) {
+    _runlist = runlist_LHC17m;
+    _nruns = sizeof(runlist_LHC17m)/4;
+  }
+  //
+  if (runlist.EqualTo("LHC17o")) {
+    _runlist = runlist_LHC17o;
+    _nruns = sizeof(runlist_LHC17o)/4;
   }
   //
   if (runlist.EqualTo("LHC17k")) {
