@@ -26,7 +26,7 @@ AliAnalysisTaskCosmicTOF::AliAnalysisTaskCosmicTOF(const Char_t *name) :
   fOutputTree(NULL),
   fNtrk(0),
   fTstamp(0),
-  fTmask(0)
+  firedTrigger("")
 {
   
   /*
@@ -61,7 +61,8 @@ AliAnalysisTaskCosmicTOF::UserCreateOutputObjects()
   //
   fOutputTree->Branch("ntrk", &fNtrk, "ntrk/I");
   fOutputTree->Branch("tstamp", &fTstamp, "tstamp/i");
-  fOutputTree->Branch("tmask", &fTmask, "tmask/i");
+  fOutputTree->Branch("firedTrigger", &firedTrigger);
+   
   //
   fOutputTree->Branch("xv", &fXv, "xv[ntrk]/F");
   fOutputTree->Branch("yv", &fYv, "yv[ntrk]/F");
@@ -87,7 +88,8 @@ AliAnalysisTaskCosmicTOF::UserCreateOutputObjects()
   fOutputTree->Branch("dx", &fDx, "dx[ntrk]/F");
   fOutputTree->Branch("dz", &fDz, "dz[ntrk]/F");
   fOutputTree->Branch("nmatch", &fNmatch, "nmatch[ntrk]/I");
-
+  fOutputTree->Branch("isTOFout", &isTOFout, "isTOFout[ntrk]/O");
+ 
   PostData(1, fOutputTree);
 }
 
@@ -106,7 +108,7 @@ AliAnalysisTaskCosmicTOF::UserExec(Option_t *)
   if (!esd) return;
 
   fTstamp = esd->GetTimeStamp();
-  fTmask = esd->GetTriggerMask();
+  firedTrigger = esd->GetFiredTriggerClasses();
 
   /** loop over ESD tracks **/
   Int_t ntracks = esd->GetNumberOfTracks();
@@ -149,7 +151,8 @@ AliAnalysisTaskCosmicTOF::UserExec(Option_t *)
     fDx[itrack] = tpctracks[itrack]->GetTOFsignalDx();
     fDz[itrack] = tpctracks[itrack]->GetTOFsignalDz();
     fNmatch[itrack] = tpctracks[itrack]->GetTOFclusterN();
-
+    isTOFout[itrack] = tpctracks[itrack]->GetStatus() & AliVTrack::kTOFout;
+    
   }
 
   fOutputTree->Fill();

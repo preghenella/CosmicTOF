@@ -33,7 +33,8 @@ class AliAnalysisTaskCosmicTOF : public AliAnalysisTaskSE
   TTree *fOutputTree;
   Int_t fNtrk;
   UInt_t fTstamp;
-  ULong64_t fTmask;
+  TString firedTrigger;
+  
   //
   Float_t fXv[1024], fYv[1024], fZv[1024];
   Float_t fP[1024], fPt[1024], fTheta[1024], fPhi[1024];
@@ -45,6 +46,7 @@ class AliAnalysisTaskCosmicTOF : public AliAnalysisTaskSE
   Float_t fTime[1024], fRaw[1024], fTOT[1024];
   Float_t fDx[1024], fDz[1024];
   Int_t fNmatch[1024];
+  Bool_t isTOFout[1024];
 
   ClassDef(AliAnalysisTaskCosmicTOF, 1);
 };
